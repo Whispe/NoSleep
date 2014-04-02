@@ -37,16 +37,12 @@ public class LambdaMeansPredictor extends Predictor {
 			mu1 = Vector.sumVectors(mu1, x);
 		}
 		mu1 = Vector.scalarMult(1.0/numInstances, mu1);
-		for (int i=0; i<mu1.length; i++) {
-			
-			System.out.println(mu1[i]);
-		}
 		mu_k.add(mu1);
 		
 		// Set lambda to average distance of each training instance to mean of training data
 		// if cluster_lambda is 0 (not given in command line).
 		this.lambda = cluster_lambda;
-		System.out.println("Lambda before: " + this.lambda);
+		//System.out.println("Lambda before: " + this.lambda);
 		
 		double sum = 0;
 		if (cluster_lambda == 0) {
@@ -57,7 +53,7 @@ public class LambdaMeansPredictor extends Predictor {
 				sum += Vector.dist(x, mu1);
 			}
 			this.lambda = sum;
-			System.out.println("Lambda without norm: " + this.lambda);
+			//System.out.println("Lambda without norm: " + this.lambda);
 			this.lambda = sum / numInstances;
 			System.out.println("Lambda with norm: " + this.lambda);
 		}
@@ -100,15 +96,15 @@ public class LambdaMeansPredictor extends Predictor {
 			if (minDist <= this.lambda) {
 				
 				r_nk.get(min_k).add(i);
-				System.out.println("Went to cluster: " + min_k);
+				//System.out.println("Went to cluster: " + min_k);
 			}
 			else {
-				System.out.println("Distance: " + minDist);
+				//System.out.println("Distance: " + minDist);
 				ArrayList<Integer> newCluster = new ArrayList<Integer>();
 				newCluster.add(i);
 				r_nk.add(newCluster);
 				mu_k.add(x_i);
-				System.out.println("New cluster: " + mu_k.size());
+				//System.out.println("New cluster: " + mu_k.size());
 			}
 		}
 	}
@@ -132,9 +128,18 @@ public class LambdaMeansPredictor extends Predictor {
 				newMu_k = Vector.sumVectors(newMu_k, x_i);
 				numInClusterk++;
 			}
-			newMu_k = Vector.scalarMult(1.0/numInClusterk, newMu_k);
-			mu_k.remove(k);
-			mu_k.add(k, newMu_k);
+			if (r_nk.get(k).size() == 0) {
+				
+				newMu_k = new double[this.numFeatures];
+				for (int j=0; j<newMu_k.length; j++) {
+					
+					newMu_k[j] = 0;
+				}
+				mu_k.set(k, newMu_k);
+			} else {
+				newMu_k = Vector.scalarMult(1.0/numInClusterk, newMu_k);
+				mu_k.set(k, newMu_k);
+			}
 		}
 	}
 	
