@@ -40,6 +40,8 @@ public class StochasticKMeansPredictor extends Predictor {
 		for (int i=0; i<this.perCluster.length; i++) {
 			this.perCluster[i] = 0;
 		}
+		
+		train(instances);
 	}
 
 	public void train(List<Instance> instances) {
@@ -54,16 +56,18 @@ public class StochasticKMeansPredictor extends Predictor {
 					
 				for (int k=0; k<this.mu_k.length; k++) {
 					
-					double dist = Vector.dist(this.mu_k[k], x_i);
+					double dist = Vector.sqrDist(this.mu_k[k], x_i);
 					if (dist < minDist) {
 						
 						minDist = dist;
 						min_k = k;
 					}
 				}
-				int old_k = whichCluster[i];
+				int old_k = this.whichCluster[i];
 				int new_k = min_k;
-				this.perCluster[old_k]--;
+				if (old_k != -1) {
+					this.perCluster[old_k]--;
+				}
 				this.perCluster[new_k]++;
 				this.whichCluster[i] = new_k;
 				
@@ -72,23 +76,25 @@ public class StochasticKMeansPredictor extends Predictor {
 				
 				// Old cluster first.
 				// Initialize newMu_k to zero vector.
-				for (int k=0; k<this.numFeatures; k++) {
+				if (old_k != -1 ) {
+					for (int k=0; k<this.numFeatures; k++) {
 					
-					newMu_k[k] = 0;
-				}
-				
-				for (int k=0; k<this.whichCluster.length; k++) {
-					
-					if (this.whichCluster[k] == old_k) {
-						x_i = instances.get(k).getFeatureVector().getVectorAsArray(this.numFeatures);
-						newMu_k = Vector.sumVectors(newMu_k, x_i);
+						newMu_k[k] = 0;
 					}
-				}
-				if (this.perCluster[old_k] == 0) {
-					this.mu_k[old_k] = newMu_k;
-				} else {
-					newMu_k = Vector.scalarMult(1.0/this.perCluster[old_k], newMu_k);
-					this.mu_k[old_k] = newMu_k;
+				
+					for (int k=0; k<this.whichCluster.length; k++) {
+					
+						if (this.whichCluster[k] == old_k) {
+							x_i = instances.get(k).getFeatureVector().getVectorAsArray(this.numFeatures);
+							newMu_k = Vector.sumVectors(newMu_k, x_i);
+						}
+					}
+					if (this.perCluster[old_k] == 0) {
+						this.mu_k[old_k] = newMu_k;
+					} else {
+						newMu_k = Vector.scalarMult(1.0/this.perCluster[old_k], newMu_k);
+						this.mu_k[old_k] = newMu_k;
+					}
 				}
 				
 				// New cluster next.
@@ -123,7 +129,7 @@ public class StochasticKMeansPredictor extends Predictor {
 		
 		for (int k=0; k<this.mu_k.length; k++) {
 			
-			double dist = Vector.dist(x_i, this.mu_k[k]);
+			double dist = Vector.sqrDist(x_i, this.mu_k[k]);
 			
 			if (dist < minDist) {
 				

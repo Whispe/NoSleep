@@ -76,6 +76,30 @@ public class Vector {
 	}
 	
 	/**
+	 * This method computes the square of the Euclidean distance between two vectors.
+	 */
+	public static double sqrDist(double[] ra1, double[] ra2) {
+		
+		double dist = 0;
+		
+		if (ra1.length == ra2.length) {
+			
+			double[] neg = Vector.scalarMult(-1, ra2);
+			double[] diff = Vector.sumVectors(ra1, neg);
+			for (int i=0; i<diff.length; i++) {
+				
+				dist += diff[i] * diff[i];
+			}
+			return dist;
+		}
+		else {
+			
+			System.out.println("Vectors are not of the same length: dist().");
+			return -1;
+		}
+	}
+	
+	/**
 	 * This method computes the Euclidean distance between two vectors.
 	 */
 	public static double dist(double[] ra1, double[] ra2) {
@@ -86,8 +110,6 @@ public class Vector {
 			
 			double[] neg = Vector.scalarMult(-1, ra2);
 			double[] diff = Vector.sumVectors(ra1, neg);
-			// Oops, some sort of square distance.
-			//dist = Vector.dotProduct(diff, diff);
 			for (int i=0; i<diff.length; i++) {
 				
 				dist += diff[i] * diff[i];

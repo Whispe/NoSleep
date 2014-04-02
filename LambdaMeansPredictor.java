@@ -50,7 +50,7 @@ public class LambdaMeansPredictor extends Predictor {
 			for (int i=0; i<this.numInstances; i++) {
 				
 				double[] x = instances.get(i).getFeatureVector().getVectorAsArray(this.numFeatures);
-				sum += Vector.dist(x, mu1);
+				sum += Vector.sqrDist(x, mu1);
 			}
 			this.lambda = sum;
 			//System.out.println("Lambda without norm: " + this.lambda);
@@ -86,7 +86,7 @@ public class LambdaMeansPredictor extends Predictor {
 				
 			for (int k=0; k<this.mu_k.size(); k++) {
 				
-				double dist = Vector.dist(this.mu_k.get(k), x_i);
+				double dist = Vector.sqrDist(this.mu_k.get(k), x_i);
 				if (dist < minDist) {
 					
 					minDist = dist;
@@ -148,7 +148,7 @@ public class LambdaMeansPredictor extends Predictor {
 		
 		for (int k=0; k<this.mu_k.size(); k++) {
 			
-			double dist = Vector.dist(x_i, this.mu_k.get(k));
+			double dist = Vector.sqrDist(x_i, this.mu_k.get(k));
 			
 			if (dist < minDist) {
 				
