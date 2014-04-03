@@ -76,6 +76,7 @@ public class StochasticKMeansPredictorOld extends Predictor {
 				}
 				this.inCluster[new_k]++; // One more instance in the new_k cluster.
 				this.whichCluster[j] = new_k; // Instance j is in the new_k cluster now.
+				
 				for (int m=0; m<whichCluster.length; m++) {
 					System.out.print(whichCluster[m] + " ");
 				}
