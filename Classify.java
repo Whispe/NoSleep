@@ -20,6 +20,7 @@ public class Classify {
 	static public int SELECT_ALL_FEATURES = -1;
 	
 	public static void main(String[] args) throws IOException {
+		final long startTime = System.currentTimeMillis();
 		// Parse the command line.
 		String[] manditory_args = {"mode"};
 		createCommandLineOptions();
@@ -96,6 +97,10 @@ public class Classify {
 		} else {
 			System.out.println("Requires mode argument.");
 		}
+		
+		final long endTime = System.currentTimeMillis();
+
+		System.out.println("Execution time: " + (endTime - startTime) );
 	}
 	
 	/**
