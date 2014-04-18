@@ -49,6 +49,18 @@ public class Vector {
 		return retRa;
 	}
 	
+	public static double[] scalarMult2D(double scalar, double[][] ra) {
+		
+		double[] retRa = new double[ra.length];
+		
+		for (int i=0; i<ra.length; i++) {
+			
+			retRa[i] = scalar * ra[i][0];
+		}
+		
+		return retRa;
+	}
+	
 	/**
 	 * This method computes the dot product of two vectors.
 	 * @param ra1 The first vector as an array.
@@ -83,7 +95,7 @@ public class Vector {
 			
 			for (int i=0; i<ra1.length; i++) {
 				
-				retVal += ra1[i][1] * ra2[i][1];
+				retVal += ra1[i][0] * ra2[i][0];
 			}
 			
 			return retVal;
@@ -142,5 +154,14 @@ public class Vector {
 			System.out.println("Vectors are not of the same length: dist().");
 			return -1;
 		}
+	}
+	
+	public static double[][] elemByElemMult(double[][] d1, double[][] d2) {
+		
+		double[][] result = new double[d1.length][1];
+		for (int i=0; i<d1.length; i++) {
+			result[i][0] = d1[i][0] * d2[i][0];
+		}
+		return result;
 	}
 }
