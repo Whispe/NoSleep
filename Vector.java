@@ -75,6 +75,26 @@ public class Vector {
 		}
 	}
 	
+	public static double dotProduct2D(double[][] ra1, double[][] ra2) {
+		
+		if (ra1.length == ra2.length) {
+			
+			double retVal = 0;
+			
+			for (int i=0; i<ra1.length; i++) {
+				
+				retVal += ra1[i][1] * ra2[i][1];
+			}
+			
+			return retVal;
+		}
+		else {
+			
+			System.out.println("Vectors are not of the same length: dotProduct().");
+			return -1;
+		}
+	}
+	
 	/**
 	 * This method computes the square of the Euclidean distance between two vectors.
 	 */
