@@ -151,15 +151,19 @@ public class SumProduct {
 			double[][] rightMsg = descFtoX[1];
 			double[][] num = Vector.elemByElemMult(unaryMsg, rightMsg);
 			double denom = Vector.dotProduct2D(unaryMsg, rightMsg);
-//			for (int i=0; i< unaryMsg.length; i++) {
-//				System.out.print(rightMsg[i][0] + " ");
-//			}
 			result = Vector.scalarMult2D(1/denom, num);
-		} else{
+		} else if (x_i == n){
 			double[][] unaryMsg = msgFtoX(n,n);
 			double[][] leftMsg = ascFtoX[n];
 			double[][] num = Vector.elemByElemMult(unaryMsg, leftMsg);
 			double denom = Vector.dotProduct2D(unaryMsg, leftMsg);
+			result = Vector.scalarMult2D(1/denom, num);
+		} else {
+			double[][] unaryMsg = msgFtoX(x_i,x_i);
+			double[][] leftMsg = ascFtoX[x_i];
+			double[][] rightMsg = descFtoX[x_i];
+			double[][] num = Vector.elemByElemMult(Vector.elemByElemMult(unaryMsg, leftMsg), rightMsg);
+			double denom = Vector.dotProduct2D(Vector.elemByElemMult(unaryMsg, leftMsg), rightMsg);
 			result = Vector.scalarMult2D(1/denom, num);
 		}
 		
