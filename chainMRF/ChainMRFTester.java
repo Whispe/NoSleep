@@ -41,7 +41,7 @@ public class ChainMRFTester {
 			double maxProb = ms.maxProbability(i);
 			System.out.println("maxLogProbability="+maxProb);
 			int[] assignments = ms.getAssignments();
-			for (int j = 1; j<=assignments.length; j++) {
+			for (int j = 1; j<assignments.length; j++) {
 				System.out.println("x_"+j+"="+assignments[j]);
 			}
 		}

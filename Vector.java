@@ -31,6 +31,26 @@ public class Vector {
 		}
 	}
 	
+	public static double[][] sumVectors2D(double[][] ra1, double[][] ra2) {
+		
+		if (ra1.length == ra2.length) {
+			
+			double[][] retRa = new double[ra1.length][1];
+			
+			for (int i=0; i<ra1.length; i++) {
+				
+				retRa[i][0] = ra1[i][0] + ra2[i][0];
+			}
+			
+			return retRa;
+		}
+		else {
+			
+			System.out.println("Vectors are not of equal length: sumVectors().");
+			return null;
+		}
+	}
+	
 	/**
 	 * This method computes a vector multiplied by a scalar.
 	 * @param scalar The scalar to multiply by.
@@ -162,6 +182,30 @@ public class Vector {
 		for (int i=0; i<d1.length; i++) {
 			result[i][0] = d1[i][0] * d2[i][0];
 		}
+		return result;
+	}
+	
+	public static int idxOfMax(double[][] d) {
+		
+		int idxOfMax = 0;
+		
+		for (int i=0; i<d.length; i++) {
+			if (d[i][0] > d[idxOfMax][0]) {
+				idxOfMax = i;
+			}
+		}
+		
+		return idxOfMax;
+	}
+	
+	public static double sumComponents(double[][] d) {
+		
+		double result = 0;
+		
+		for (int i=0; i<d.length; i++) {
+			result += d[i][0];
+		}
+		
 		return result;
 	}
 }
