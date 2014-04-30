@@ -6,127 +6,123 @@ import cs475.RBM.*;
 
 public class RBMEnergy {
 	private RBMParameters _parameters;
-	private int numXSame;
+	private int numSame;
 	private int numSamples;
-	private double[][] x_s;
-	private double[][] h_s;
+	private double[] x_T;
+	private double[] h_T;
+	private double[] x_m;
 	private Random rand;
 	
 	// TODO: Add the required data structures and methods.
 
 	public RBMEnergy(RBMParameters parameters, int numSamples) {
+		
 		this._parameters = parameters;
-		this.numXSame = 0;
+		this.numSame = 0;
 		this.numSamples = numSamples;
 		this.rand = new Random(0);
+		this.x_m = new double[this._parameters.numVisibleNodes()];
+		this.x_T = new double[this._parameters.numVisibleNodes()];
+		this.h_T = new double[this._parameters.numHiddenNodes()];
 		
-		this.x_s = new double[this.numSamples][this._parameters.numVisibleNodes()];
-		this.h_s = new double[this.numSamples][this._parameters.numHiddenNodes()];
-		double[] holdX = new double[this._parameters.numVisibleNodes()];
-		double[] holdH = new double[this._parameters.numHiddenNodes()];
-		for (int i=0; i<this._parameters.numVisibleNodes(); i++) {
-			this.x_s[i] = holdX;
+		for (int i=0; i<this.x_m.length; i++) {
+			x_m[i] = this._parameters.visibleNode(i);
 		}
-		for (int i=0; i<this._parameters.numHiddenNodes(); i++) {
-			this.h_s[i] = holdH;
-		}
+		this.x_T = this.x_m;
 	}
 	
 	public double computeMarginal() {
-		// TODO: Add code here
-		double energy = 0.0;
 		
-		for (int i=0; i<this.numSamples; i++) {
-			int sampNum = i;
-			this.h_s[sampNum] = generateH(sampNum);
-			this.x_s[sampNum] = generateX(sampNum);
+		for (int sampNum=0; sampNum<this.numSamples; sampNum++) {
+			this.h_T = generateH_i(sampNum);
+			this.x_T = generateX_i(sampNum);
+//			System.out.println("Sample num: " + sampNum + ":");
+//			System.out.println("h_s: ");
+//			for (int k=0; k<this.h_T.length; k++) {
+//				System.out.print(h_T[k] + " ");
+//			}
+//			System.out.println();
+//			System.out.println("x_s: ");
+//			for (int k=0; k<this.x_T.length; k++) {
+//				System.out.print(x_T[k] + " ");
+//			}
+//			System.out.println();
+			if (xSame()) {
+				this.numSame++;
+			}
+//			System.out.println("numSame: " + numSame);
+//			System.out.println();
 		}
 		
-		for (int i=0; i<this.numSamples; i++) {
-			int sampNum = i;
-			this.numXSame += compX(sampNum);
-		}
-		
-		energy = 1.0 * this.numXSame / this.numSamples;
-		
-		return energy;
+		return 1.0 * this.numSame / this.numSamples;
 	}
 	
-	public double[] generateH(int sampNum) {
-		double[] h_sampNum = new double[this._parameters.numHiddenNodes()];
+	public double[] generateH_i(int sampNum) {
 		
-		// Find x^(i-1).		
-		double[] x_T = new double[this._parameters.numVisibleNodes()];
-		if (sampNum == 0) {
-			for (int i=0; i<x_T.length; i++) {
-				x_T[i] = this._parameters.visibleNode(i);
-			}
-		} else {
-			x_T = this.x_s[sampNum-1];
-		}
-		
-		for (int i=0; i<this._parameters.numHiddenNodes(); i++) {
+		double[] h = new double[this._parameters.numHiddenNodes()];
+		for (int pos=0; pos<this._parameters.numHiddenNodes(); pos++) {
 			double u = this.rand.nextDouble();
-			double p = calcPHGivenX(x_T,i);
+			double p = calcPhGivenx(pos);
 			if (u<p) {
-				h_sampNum[i] = 0; // This is y.
+				h[pos] = 0;
 			} else {
-				h_sampNum[i] = 1;
+				h[pos] = 1;
 			}
 		}
-		return h_sampNum;
+		
+		return h;
 	}
 	
-	public double[] generateX(int sampNum) {
-		double[] x_sampNum = new double[this._parameters.numVisibleNodes()];
+	public double[] generateX_i(int sampNum) {
 		
-		double[] h_T = this.h_s[sampNum];
-		
-		for (int i=0; i<this._parameters.numVisibleNodes(); i++) {
+		double[] x = new double[this._parameters.numVisibleNodes()];
+		for (int pos=0; pos<this._parameters.numVisibleNodes(); pos++) {
 			double u = this.rand.nextDouble();
-			double p = calcPXGivenH(h_T, i);
+			double p = calcPxGivenh(pos);
 			if (u<p) {
-				x_sampNum[i] = 0; // This is y.
+				x[pos] = 0;
 			} else {
-				x_sampNum[i] = 1;
+				x[pos] = 1;
 			}
 		}
-		return x_sampNum;
+		
+		return x;
 	}
 	
-	public double calcPHGivenX(double[] x_T, int j) {
+	public double calcPhGivenx(int pos) {
+		
 		double[] w_j = new double[this._parameters.numVisibleNodes()];
-		
-		for (int i=0; i<w_j.length; i++) {
-			w_j[i] = this._parameters.weight(i, j);
+		for (int idx=0; idx<w_j.length; idx++) {
+			w_j[idx] = this._parameters.weight(idx, pos);
 		}
-		double z = Vector.dotProduct(x_T, w_j) + this._parameters.hiddenBias(j);
+		double z = Vector.dotProduct(this.x_T, w_j) + this._parameters.hiddenBias(pos);
 		
 		return sigmoidFunc(z);
 	}
 	
-	public double calcPXGivenH(double[] h_T, int i) {
-		double[] w_i = new double[this._parameters.numHiddenNodes()];
+	public double calcPxGivenh(int pos) {
 		
-		for (int j=0; j<w_i.length; j++) {
-			w_i[j] = this._parameters.weight(i, j);
+		double[] w_i = new double[this._parameters.numHiddenNodes()];
+		for (int idx=0; idx<w_i.length; idx++) {
+			w_i[idx] = this._parameters.weight(pos, idx);
 		}
-		double z = Vector.dotProduct(h_T, w_i) + this._parameters.visibleBias(i);
+		double z = Vector.dotProduct(this.h_T, w_i) + this._parameters.visibleBias(pos);
 		
 		return sigmoidFunc(z);
 	}
 	
 	public double sigmoidFunc(double z) {
-		return 1.0 / (1 + Math.exp(-z));
+		
+		return 1.0 / (1.0 + Math.exp(-z));
 	}
 	
-	public int compX(int sampNum) {
-		int same = 1; // 0 for not the same, 1 otherwise
-		for (int i=0; i<this._parameters.numVisibleNodes(); i++) {
-			if (this.x_s[sampNum][i] != this._parameters.visibleNode(i)) {
-				same = 0;
+	public boolean xSame() {
+		
+		for (int i=0; i<this.x_m.length; i++) {
+			if (this.x_m[i] != this.x_T[i]) {
+				return false;
 			}
 		}
-		return same;
+		return true;
 	}
 }
