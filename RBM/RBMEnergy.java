@@ -63,7 +63,7 @@ public class RBMEnergy {
 		for (int pos=0; pos<this._parameters.numHiddenNodes(); pos++) {
 			double u = this.rand.nextDouble();
 			double p = calcPhGivenx(pos);
-			if (u<p) {
+			if (u<(1-p)) {
 				h[pos] = 0;
 			} else {
 				h[pos] = 1;
@@ -79,7 +79,7 @@ public class RBMEnergy {
 		for (int pos=0; pos<this._parameters.numVisibleNodes(); pos++) {
 			double u = this.rand.nextDouble();
 			double p = calcPxGivenh(pos);
-			if (u<p) {
+			if (u<(1-p)) {
 				x[pos] = 0;
 			} else {
 				x[pos] = 1;
